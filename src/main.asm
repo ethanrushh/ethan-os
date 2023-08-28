@@ -55,7 +55,7 @@ main:
 	jmp .halt
 
 
-hello_world_msg: db 'Hello World', ENDL, 0
+hello_world_msg: db "Welcome to Ethan's OS!", ENDL, 0
 
 
 times 510-($-$$) db 0 ; Fills the rest of the bytes we need with 0s
