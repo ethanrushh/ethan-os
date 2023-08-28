@@ -59,4 +59,4 @@ hello_world_msg: db 'Hello World', ENDL, 0
 
 
 times 510-($-$$) db 0 ; Fills the rest of the bytes we need with 0s
-dw 0AA55h
+dw 0AA55h ; The required signature for the BIOS to detect that we are a boot loader not the start of random data
