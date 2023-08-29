@@ -2,6 +2,7 @@
 Super basic OS (boot lader with some added candy) just for testing tools
 
 # Building
+`make clean`
 `make`
 
 The binary files will be output to the `build` directory
