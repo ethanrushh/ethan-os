@@ -7,7 +7,7 @@ void _cdecl cstart_(uint16_t bootDrive)
 
     puts("Successfully started EthanOS\r\n\r\n");
     printf("Testing formatting: %% %c %s\r\n", 'a', "string");
-    printf("Testing more formatting: %d %i %x %p %o\r\n", 1234, 5678, 0xdead, 0xbeef);
+    printf("Testing more formatting: %d %i %x %p %o\r\n", -1234, 5678, 0xdead, 0xbeef);
 
     for(;;) 
     {
