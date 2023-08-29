@@ -8,7 +8,9 @@ The binary files will be output to the `build` directory
 
 
 # Running
-`qemu-system-i386 -fda build/main_floppy.img`
+`./debug.sh`
+
+debug.sh will clean, build and execute the OS
 
 # Depdencies
 You're best off just looking at the makefile to figure it out but the incomplete list is:
@@ -17,3 +19,5 @@ mtools
 masm
 make
 qemu
+watcom C (16 bit realmode compiler)
+~~bochs~~
