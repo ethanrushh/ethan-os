@@ -1,7 +1,7 @@
 Open Watcom Linker Version 2.0 beta Aug 29 2023 01:48:44 (32-bit)
 Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       23/08/29 17:23:47
+Created on:       23/08/29 17:34:35
 Executable Image: /home/ethan/Documents/Personal/Programming/OS/build/full.bin
 creating a RAW Binary Image executable
 
@@ -13,7 +13,7 @@ creating a RAW Binary Image executable
 Group                           Address              Size
 =====                           =======              ====
 
-DGROUP                          000005c8             00000080
+DGROUP                          000005c8             00000084
 
 
 
@@ -26,9 +26,9 @@ Segment                Class          Group          Address         Size
 
 _ENTRY                 CODE           AUTO           00000000        00000013
 _TEXT                  CODE           AUTO           00000013        000005b4
-CONST                  DATA           DGROUP         000005c8        0000006d
-CONST2                 DATA           DGROUP         00000636        00000011
-_DATA                  DATA           DGROUP         00000648        00000000
+CONST                  DATA           DGROUP         000005c8        00000071
+CONST2                 DATA           DGROUP         0000063a        00000011
+_DATA                  DATA           DGROUP         0000064c        00000000
 
 
                         +----------------+
@@ -53,7 +53,7 @@ Module: /home/ethan/Documents/Personal/Programming/OS/build/full/c/stdio.obj(/ho
 000000c0       puts_
 000000f7       _printf
 00000353+      printf_number_
-00000636+      _g_HexChars
+0000063a+      _g_HexChars
 
 
                         +---------------------+
@@ -70,14 +70,14 @@ main.asm        _ENTRY                CODE           00000000         00000013
 x86.asm         _TEXT                 CODE           00000013         00000041
 /home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/main.c
                 _TEXT                 CODE           00000054         00000045
-                CONST                 DATA           000005c8         0000006d
-                CONST2                DATA           00000636         00000000
-                _DATA                 DATA           00000648         00000000
+                CONST                 DATA           000005c8         00000071
+                CONST2                DATA           0000063a         00000000
+                _DATA                 DATA           0000064c         00000000
 /home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/stdio.c
                 _TEXT                 CODE           00000099         0000052e
-                CONST                 DATA           00000636         00000000
-                CONST2                DATA           00000636         00000011
-                _DATA                 DATA           00000648         00000000
+                CONST                 DATA           0000063a         00000000
+                CONST2                DATA           0000063a         00000011
+                _DATA                 DATA           0000064c         00000000
 Warning! W1014: stack segment not found
 
 
@@ -86,6 +86,6 @@ Warning! W1014: stack segment not found
                         +-----------------------+
 
 Stack size:  0200 (512.)
-Memory size:  0648 (1608.)
+Memory size:  064c (1612.)
 Entry point address: 00000000
 Link time: 00:00.00

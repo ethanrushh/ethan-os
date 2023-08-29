@@ -13,7 +13,7 @@ The binary files will be output to the `build` directory
 
 debug.sh will clean, build and execute the OS
 
-# Depdencies
+# Dependencies
 You're best off just looking at the makefile to figure it out but the incomplete list is:
 
 mtools
