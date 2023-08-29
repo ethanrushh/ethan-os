@@ -11,7 +11,7 @@ void _cdecl cstart_(uint16_t bootDrive)
 
     for(;;) 
     {
-        printf("Iteration %d\r\n", iterations);
-        iterations++;
+        //printf("Iteration %d\r\n", iterations);
+        //iterations++;
     }
 }
