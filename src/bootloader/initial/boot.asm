@@ -216,14 +216,12 @@ main:
 	mov ds, ax
 	mov es, ax
 
-	jmp KERNEL_LOAD_OFFSET:KERNEL_LOAD_OFFSET ; Load the kernel!
+	jmp KERNEL_LOAD_SEGMENT:KERNEL_LOAD_OFFSET ; Load the kernel! This little shit costed me another few hours of debugging because I messed up the offest...
 
 	jmp wait_for_key_then_reboot ; This should never happen. If we see this, something has gone VERY wrong.
 
-
 	cli
 	hlt
-
 
 
 ; ==============
@@ -365,6 +363,7 @@ disk_reset:
 	ret
 
 
+; Not enough space sadly.
 ; hello_world_msg: 		db "Welcome to Ethan's OS!", ENDL, 0
 ; disk_read_failure_msg: 	db "Failed to read the floppy. Make sure the floppy is working correctly and try again.", ENDL, 0
 ; any_key_reboot_msg: 	db "Press any key to reboot...", ENDL, 0
@@ -372,11 +371,11 @@ disk_reset:
 ; kernel_not_found_msg:	db 'kernel.bin was not found. Check the drive is working correctly and that the installation is not corrupted', ENDL, 0
 ; kernel_cluster: 		dw 0
 
-hello_world_msg: 		db "Booting eOS", ENDL, 0
-disk_read_failure_msg: 	db "Bad floppy", ENDL, 0
+hello_world_msg: 		db "Booting EthanOS", ENDL, 0
+disk_read_failure_msg: 	db "Read failed", ENDL, 0
 any_key_reboot_msg: 	db "Press key", ENDL, 0
-file_kernel_bin:		db 'KERNEL  BIN' ; Fat file names are 11 bytes, padded with spaces
-kernel_not_found_msg:	db 'kernel not found', ENDL, 0
+file_kernel_bin:		db 'FULL    BIN' ; Fat file names are 11 bytes, padded with spaces
+kernel_not_found_msg:	db 'Bad floppy', ENDL, 0
 kernel_cluster: 		dw 0
 
 KERNEL_LOAD_SEGMENT		equ 0x2000

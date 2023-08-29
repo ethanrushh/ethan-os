@@ -1,5 +1,7 @@
 ASSEMBLER=nasm
 CC=gcc
+CC16=/usr/bin/watcom/binl/wcc
+LD16=/usr/bin/watcom/binl/wlink
 
 SRC_DIR=src
 UTILS_DIR=utils
@@ -16,24 +18,32 @@ floppy_image: $(BUILD_DIR)/main_floppy.img
 $(BUILD_DIR)/main_floppy.img: bootloader kernel
 	dd if=/dev/zero of=$(BUILD_DIR)/main_floppy.img bs=512 count=2880
 	mkfs.fat -F 12 -n "NBOS" $(BUILD_DIR)/main_floppy.img
-	dd if=$(BUILD_DIR)/bootloader.bin of=$(BUILD_DIR)/main_floppy.img conv=notrunc
+	dd if=$(BUILD_DIR)/initial.bin of=$(BUILD_DIR)/main_floppy.img conv=notrunc
+	mcopy -i $(BUILD_DIR)/main_floppy.img $(BUILD_DIR)/full.bin "::full.bin"
 	mcopy -i $(BUILD_DIR)/main_floppy.img $(BUILD_DIR)/kernel.bin "::kernel.bin"
 	mcopy -i $(BUILD_DIR)/main_floppy.img testfile.txt "::test.txt"
 
 
 # Boot loader
 # Contains both the required FAT12 headers and the boot loader
-bootloader: $(BUILD_DIR)/bootloader.bin
+bootloader: initial full
 
-$(BUILD_DIR)/bootloader.bin: always
-	$(ASSEMBLER) $(SRC_DIR)/bootloader/boot.asm -f bin -o $(BUILD_DIR)/bootloader.bin
+initial: $(BUILD_DIR)/initial.bin
+
+$(BUILD_DIR)/initial.bin: always
+	$(MAKE) -C $(SRC_DIR)/bootloader/initial BUILD_DIR=$(abspath $(BUILD_DIR))
+
+full: $(BUILD_DIR)/full.bin
+
+$(BUILD_DIR)/full.bin: always
+	$(MAKE) -C $(SRC_DIR)/bootloader/full BUILD_DIR=$(abspath $(BUILD_DIR))
 
 
 # Kernel
 kernel: $(BUILD_DIR)/kernel.bin
 
 $(BUILD_DIR)/kernel.bin: always
-	$(ASSEMBLER) $(SRC_DIR)/kernel/main.asm -f bin -o build/kernel.bin
+	$(MAKE) -C $(SRC_DIR)/kernel BUILD_DIR=$(abspath $(BUILD_DIR))
 
 
 # Utils
