@@ -82,17 +82,144 @@ main:
 	mov ss, ax
 	mov sp, 0x7C00 ; The stack grows down from where we loaded into memory
 
+	; Some BIOSes suck and start at 07C0:0000 instead of 0000:7C00
+	push es
+	push word .after
+	retf
+
+.after:
 	; try to read something from the floppy disk
 	; The BIOS will set DL to the drive number for us
 	mov [ebr_drive_number], dl
-	mov ax, 1 ; Second sector of the disk
-	mov cl, 1 ; This fucker costed me 3 hours of my day at 1:30AM. Stupid mistake, cunt to debug. Fuck you too.
-	mov bx, 0x7E00 ; load into just after the boot loader
-	call disk_read
 
 	; Print our message to the user
 	mov si, hello_world_msg
 	call puts
+
+	; Read drive parameters
+	push es
+	mov ah, 08h
+	int 13h
+	jc failed_read
+	pop es
+
+	and cl, 0x3F ; Remove the top 2 bits
+	xor ch, ch
+	mov [bdb_sectors_per_track], cx
+
+	inc dh
+	mov [bdb_heads], dh
+
+	mov ax, [bdb_sectors_per_fat]
+	mov bl, [bdb_fat_count]
+	xor bh, bh
+	mul bx
+	add ax, [bdb_reserved_sectors]
+	push ax
+
+	mov ax, [bdb_sectors_per_fat]
+	shl ax, 5
+	xor dx, dx
+	div word [bdb_bytes_per_sector]
+
+	test dx, dx
+	jz .root_dir_after
+	inc ax
+
+.root_dir_after:
+
+	mov cl, al
+	pop ax
+	mov dl, [ebr_drive_number]
+	mov bx, buffer
+	call disk_read
+
+	xor bx, bx
+	mov di, buffer
+
+.search_kernel:
+	mov si, file_kernel_bin
+	mov cx, 11
+	push di
+	repe cmpsb ; compare string bytes, compares strings stored in ds:si and es:di
+			   ; repe will repeat the instruction until the zero flag = 1 a max of cx times
+	pop di
+	je .found_kernel
+
+	add di, 32
+	inc bx
+	cmp bx, [bdb_dir_entries_count]
+	jl .search_kernel
+
+	jmp kernel_not_found_error
+
+
+.found_kernel:
+	mov ax, [di + 26]
+	mov [kernel_cluster], ax
+
+	mov ax, [bdb_reserved_sectors]
+	mov bx, buffer
+	mov cl, [bdb_sectors_per_fat]
+	mov dl, [ebr_drive_number]
+	call disk_read
+
+	; lower memory is standardized
+	; load the kernel into memory
+	mov bx, KERNEL_LOAD_SEGMENT
+	mov es, bx
+	mov bx, KERNEL_LOAD_OFFSET
+
+.load_kernel_loop:
+	mov ax, [kernel_cluster]
+	add ax, 31 ; temp - TODO: fix because this won't work on anything except a 1.44MB floppy
+
+	mov cl, 1
+	mov dl, [ebr_drive_number]
+	call disk_read
+
+	add bx, [bdb_bytes_per_sector]
+
+	mov ax, [kernel_cluster]
+	mov cx, 3
+	mul cx
+	mov cx, 2
+	div cx
+
+	; an overflow will occur if the kernel is above 64KiB
+	; TODO: fix
+	mov si, buffer
+	add si, ax
+	mov ax, [ds:si]
+
+	or dx, dx
+	jz .even
+
+
+.odd:
+	shr ax, 4
+	jmp .next_cluster_after
+
+.even:
+	and ax, 0x0FFF
+
+.next_cluster_after:
+	cmp ax, 0x0FF8
+	jae .read_finish
+
+	mov [kernel_cluster], ax
+	jmp .load_kernel_loop
+
+.read_finish:
+	mov dl, [ebr_drive_number]
+	mov ax, KERNEL_LOAD_SEGMENT
+	mov ds, ax
+	mov es, ax
+
+	jmp KERNEL_LOAD_OFFSET:KERNEL_LOAD_OFFSET ; Load the kernel!
+
+	jmp wait_for_key_then_reboot ; This should never happen. If we see this, something has gone VERY wrong.
+
 
 	cli
 	hlt
@@ -107,12 +234,19 @@ main:
 display_disk_read_error:
 	mov si, disk_read_failure_msg
 	call puts
-	mov si, any_key_reboot_msg
+
+	jmp wait_for_key_then_reboot
+
+kernel_not_found_error:
+	mov si, kernel_not_found_msg
 	call puts
 
 	jmp wait_for_key_then_reboot
 
 wait_for_key_then_reboot:
+	mov si, any_key_reboot_msg
+	call puts
+
 	mov ah, 0
 	int 16h ; Wait for key press
 	jmp 0FFFFh:0 ; Jump to the beginning of the BIOS, reinitializing the system, effectively rebooting
@@ -192,7 +326,7 @@ disk_read:
 	pusha ; the BIOS will touch some registers so we'll just save them all to be sure we don't break anything
 	stc ; some BIOSes won't properly set the carry flag so we'll do that ourselves
 	int 13h ; if the carry flag is clear, the read was a success
-	jnc .finish_read
+	jnc finish_read
 
 	; If the read failed, reset the controller and go again
 	popa
@@ -203,11 +337,11 @@ disk_read:
 	jnz .retry_disk_read
 
 ; The boot process has failed beyond recovery - all attempts to boot have failed
-.failed_read:
+failed_read:
 	jmp display_disk_read_error
 
 
-.finish_read:
+finish_read:
 	popa
 
 	; Restore the registers we pushed
@@ -231,10 +365,25 @@ disk_reset:
 	ret
 
 
-hello_world_msg: 		db "Welcome to Ethan's OS!", ENDL, 0
-disk_read_failure_msg: 	db "Failed to read the floppy. Make sure the floppy is working correctly and try again.", ENDL, 0
-any_key_reboot_msg: 	db "Press any key to reboot...", ENDL, 0
+; hello_world_msg: 		db "Welcome to Ethan's OS!", ENDL, 0
+; disk_read_failure_msg: 	db "Failed to read the floppy. Make sure the floppy is working correctly and try again.", ENDL, 0
+; any_key_reboot_msg: 	db "Press any key to reboot...", ENDL, 0
+; file_kernel_bin:		db 'KERNEL  BIN' ; Fat file names are 11 bytes, padded with spaces
+; kernel_not_found_msg:	db 'kernel.bin was not found. Check the drive is working correctly and that the installation is not corrupted', ENDL, 0
+; kernel_cluster: 		dw 0
 
+hello_world_msg: 		db "Booting eOS", ENDL, 0
+disk_read_failure_msg: 	db "Bad floppy", ENDL, 0
+any_key_reboot_msg: 	db "Press key", ENDL, 0
+file_kernel_bin:		db 'KERNEL  BIN' ; Fat file names are 11 bytes, padded with spaces
+kernel_not_found_msg:	db 'kernel not found', ENDL, 0
+kernel_cluster: 		dw 0
+
+KERNEL_LOAD_SEGMENT		equ 0x2000
+KERNEL_LOAD_OFFSET		equ 0
 
 times 510-($-$$) db 0 ; Fills the rest of the bytes we need with 0s
 dw 0AA55h ; The required signature for the BIOS to detect that we are a boot loader not the start of random data
+
+; The buffer will be set to the first memory address AFTER our boot loader
+buffer:
