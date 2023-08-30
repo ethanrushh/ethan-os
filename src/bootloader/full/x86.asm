@@ -26,6 +26,9 @@ __U4D:
 
     ret
 
+; U4D
+; Calculates an unsigned 4 byte multiply
+; Required by Watcom C
 global __U4M
 __U4M:
     shl edx, 16
