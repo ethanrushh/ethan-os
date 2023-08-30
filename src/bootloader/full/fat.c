@@ -156,21 +156,21 @@ FAT_File far* FAT_OpenEntry(DISK* disk, FAT_DirectoryEntry* entry)
     }
 
     FAT_FileData far* fd = &g_Data->OpenedFiles[handle];
-    fd -> Public.Handle = handle;
-    fd -> Public.IsDirectory = (entry -> Attributes & FAT_ATTRIBUTE_DIRECTORY) != 0;
-    fd -> Public.Position = 0;
-    fd -> Public.Size = 0;
-    fd -> FirstCluster = entry -> FirstClusterLow + ((uint32_t)entry->FirstClusterHigh << 16);
-    fd -> CurrentCluster = fd -> FirstCluster;
-    fd -> CurrentSectorInCluster = 0;
+    fd->Public.Handle = handle;
+    fd->Public.IsDirectory = (entry->Attributes & FAT_ATTRIBUTE_DIRECTORY) != 0;
+    fd->Public.Position = 0;
+    fd->Public.Size = entry->Size;
+    fd->FirstCluster = entry->FirstClusterLow + ((uint32_t)entry->FirstClusterHigh << 16);
+    fd->CurrentCluster = fd->FirstCluster;
+    fd->CurrentSectorInCluster = 0;
 
-    if (!DISK_ReadSectors(disk, FAT_ClusterToLba(fd -> CurrentCluster), 1, fd -> Buffer))
+    if (!DISK_ReadSectors(disk, FAT_ClusterToLba(fd->CurrentCluster), 1, fd->Buffer))
     {
-        log(IO, "FAT Read Error");
+        printf("FAT: read error\r\n");
         return false;
     }
 
-    fd -> Opened = true;
+    fd->Opened = true;
     return &fd->Public;
 }
 
@@ -189,7 +189,9 @@ uint32_t FAT_Read(DISK* disk, FAT_File far* file, uint32_t byteCount, void* data
     FAT_FileData far* fd = (file -> Handle == ROOT_DIRECTORY_HANDLE) ? &g_Data->RootDirectory : &g_Data->OpenedFiles[file->Handle];
 
     uint8_t* u8DataOut = (uint8_t*)dataOut;
-    byteCount = min(byteCount, fd->Public.Size - fd->Public.Position);
+
+    if (!fd->Public.IsDirectory) 
+        byteCount = min(byteCount, fd->Public.Size - fd->Public.Position);
 
     while (byteCount > 0)
     {
@@ -237,10 +239,12 @@ uint32_t FAT_Read(DISK* disk, FAT_File far* file, uint32_t byteCount, void* data
 
     return u8DataOut - (uint8_t*)dataOut;
 }
+
 bool FAT_ReadEntry(DISK* disk, FAT_File far* file, FAT_DirectoryEntry* directoryEntry)
 {
-    FAT_Read(disk, file, sizeof(FAT_DirectoryEntry), directoryEntry) == sizeof(FAT_DirectoryEntry);
+    return FAT_Read(disk, file, sizeof(FAT_DirectoryEntry), directoryEntry) == sizeof(FAT_DirectoryEntry);
 }
+
 void FAT_Close(FAT_File far* file)
 {
     if (file->Handle == ROOT_DIRECTORY_HANDLE)
@@ -257,25 +261,25 @@ void FAT_Close(FAT_File far* file)
 
 bool FAT_FindFile(DISK* disk, FAT_File far* file, const char* name, FAT_DirectoryEntry* entryOut) 
 {
-    char fatName[11];
+    char fatName[12];
     FAT_DirectoryEntry entry;
 
     memset(fatName, ' ', sizeof(fatName));
+    fatName[11] = '\0';
 
     const char* ext = strchr(name, '.'); // TODO: Should search for the LAST period not the FIRST period. The extension for e.txt.bin is bin, not txt.
 
     if (ext == NULL)
         ext = name + 11;
 
-    for (int i = 0; i < 8 && name + i < ext; i++)
+    for (int i = 0; i < 8 && name[i] && name + i < ext; i++)
         fatName[i] = toUpper(name[i]);
 
     if (ext != NULL)
     {
-        for (int i = 0; i < 3 && ext[i]; i++)
-            fatName[i + 8] = ext[i];
+        for (int i = 0; i < 3 && ext[i + 1]; i++)
+            fatName[i + 8] = toUpper(ext[i + 1]);
     }
-
 
     while (FAT_ReadEntry(disk, file, &entry))
     {

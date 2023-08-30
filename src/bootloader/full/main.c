@@ -3,24 +3,30 @@
 #include "disk.h"
 #include "fat.h"
 
+void far* g_data = (void far*)0x00500200;
+
 void _cdecl cstart_(uint16_t bootDrive)
 {
     DISK disk;
     if (!DISK_Initialize(&disk, bootDrive))
     {
-        log(INFO, "Disk init error");
+        printf("Disk init error\r\n");
         goto end;
     }
+
+    DISK_ReadSectors(&disk, 19, 1, g_data);
 
     if (!FAT_Initialize(&disk))
     {
-        log(INFO, "FAT init error");
+        printf("FAT init error\r\n");
         goto end;
     }
 
+    // browse files in root
     FAT_File far* fd = FAT_Open(&disk, "/");
     FAT_DirectoryEntry entry;
-    while (FAT_ReadEntry(&disk, fd, &entry))
+    int i = 0;
+    while (FAT_ReadEntry(&disk, fd, &entry) && i++ < 5)
     {
         printf("  ");
         for (int i = 0; i < 11; i++)
@@ -29,11 +35,30 @@ void _cdecl cstart_(uint16_t bootDrive)
     }
     FAT_Close(fd);
 
-    puts("Successfully started EthanOS\r\n\r\n");
-    printf("Testing formatting: %% %c %s\r\n", 'a', "string");
-    printf("Testing more formatting: %d %i %x %p %o\r\n", -1234, 5678, 0xdead, 0xbeef);
-
+    catFile("test.txt", disk);
+    catFile("testdir/test.txt", disk);
 
 end:
     for (;;);
+}
+
+void catFile(const char* absolutePath, DISK disk)
+{
+    FAT_File far* fd = FAT_Open(&disk, "/");
+
+    // read test.txt
+    char buffer[100];
+    uint32_t read;
+    fd = FAT_Open(&disk, absolutePath);
+    while ((read = FAT_Read(&disk, fd, sizeof(buffer), buffer)))
+    {
+        for (uint32_t i = 0; i < read; i++)
+        {
+            if (buffer[i] == '\n')
+                putc('\r');
+            putc(buffer[i]);
+        }
+    }
+    printf("\r\n");
+    FAT_Close(fd);
 }
