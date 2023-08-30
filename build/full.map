@@ -1,7 +1,7 @@
 Open Watcom Linker Version 2.0 beta Aug 29 2023 01:48:44 (32-bit)
 Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       23/08/29 17:34:35
+Created on:       23/08/30 20:35:54
 Executable Image: /home/ethan/Documents/Personal/Programming/OS/build/full.bin
 creating a RAW Binary Image executable
 
@@ -13,7 +13,7 @@ creating a RAW Binary Image executable
 Group                           Address              Size
 =====                           =======              ====
 
-DGROUP                          000005c8             00000084
+DGROUP                          000018b8             00000206
 
 
 
@@ -25,10 +25,11 @@ Segment                Class          Group          Address         Size
 =======                =====          =====          =======         ====
 
 _ENTRY                 CODE           AUTO           00000000        00000013
-_TEXT                  CODE           AUTO           00000013        000005b4
-CONST                  DATA           DGROUP         000005c8        00000071
-CONST2                 DATA           DGROUP         0000063a        00000011
-_DATA                  DATA           DGROUP         0000064c        00000000
+_TEXT                  CODE           AUTO           00000013        000018a5
+CONST                  DATA           DGROUP         000018b8        000001e8
+CONST2                 DATA           DGROUP         00001aa0        00000011
+_DATA                  DATA           DGROUP         00001ab2        00000004
+_BSS                   BSS            DGROUP         00001ab6        00000008
 
 
                         +----------------+
@@ -44,16 +45,52 @@ Address        Symbol
 Module: /home/ethan/Documents/Personal/Programming/OS/build/full/asm/main.obj(main.asm)
 00000000       entry
 Module: /home/ethan/Documents/Personal/Programming/OS/build/full/asm/x86.obj(x86.asm)
-00000013       _x86_div64_32
-00000041       _x86_Video_WriteCharTTY
+00000013       __U4D
+0000003a       __U4M
+00000054       _x86_div64_32
+00000082       _x86_Video_WriteCharTTY
+00000095       _x86_Disk_Reset
+000000aa       _x86_Disk_Read
+000000e1       _x86_Disk_GetDriveParams
+Module: /home/ethan/Documents/Personal/Programming/OS/build/full/c/ctype.obj(/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/ctype.c)
+00000125       toUpper_
+0000016d+      isLower_
+Module: /home/ethan/Documents/Personal/Programming/OS/build/full/c/disk.obj(/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/disk.c)
+000001ab       DISK_Initialize_
+00000221+      DISK_LBA2CHS_
+000002d4       DISK_ReadSectors_
+Module: /home/ethan/Documents/Personal/Programming/OS/build/full/c/fat.obj(/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/fat.c)
+00000371+      FAT_ReadBootSector_
+000003a5+      FAT_ReadFat_
+000003e9       FAT_Initialize_
+00000624+      FAT_ClusterToLba_
+0000067a+      FAT_OpenEntry_
+00000824+      FAT_NextCluter_
+000008b5+      FAT_Read_
+00000bd4       FAT_ReadEntry_
+00000c16       FAT_Close_
+00000c94+      FAT_FindFile_
+00000db5       FAT_Open_
 Module: /home/ethan/Documents/Personal/Programming/OS/build/full/c/main.obj(/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/main.c)
-00000054       _cstart_
+00000f21       _cstart_
+Module: /home/ethan/Documents/Personal/Programming/OS/build/full/c/memory.obj(/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/memory.c)
+0000100f       memcpy_
+00001087       memset_
+000010e6       memcmp_
 Module: /home/ethan/Documents/Personal/Programming/OS/build/full/c/stdio.obj(/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/stdio.c)
-00000099+      putc_
-000000c0       puts_
-000000f7       _printf
-00000353+      printf_number_
-0000063a+      _g_HexChars
+00001163       putc_
+0000118a       puts_
+000011c1+      formatIdentifier_
+0000120b       log_
+00001246       _printf
+000014a1+      printf_number_
+00001aa0+      _g_HexChars
+Module: /home/ethan/Documents/Personal/Programming/OS/build/full/c/string.obj(/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/string.c)
+00001715       strchr_
+00001770+      strcpy_
+000017e4       strlen_
+Module: /home/ethan/Documents/Personal/Programming/OS/build/full/c/utility.obj(/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/utility.c)
+0000181f+      align_
 
 
                         +---------------------+
@@ -67,17 +104,48 @@ Module          Segment               Class           Address         Size
 ======          =======               =====           =======         ====
 
 main.asm        _ENTRY                CODE           00000000         00000013
-x86.asm         _TEXT                 CODE           00000013         00000041
+x86.asm         _TEXT                 CODE           00000013         00000112
+/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/ctype.c
+                _TEXT                 CODE           00000125         00000086
+                CONST                 DATA           000018b8         00000000
+                CONST2                DATA           00001aa0         00000000
+                _DATA                 DATA           00001ab2         00000000
+/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/disk.c
+                _TEXT                 CODE           000001ab         000001c6
+                CONST                 DATA           000018b8         00000000
+                CONST2                DATA           00001aa0         00000000
+                _DATA                 DATA           00001ab2         00000000
+/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/fat.c
+                _TEXT                 CODE           00000371         00000bb0
+                CONST                 DATA           000018b8         00000130
+                CONST2                DATA           00001aa0         00000000
+                _DATA                 DATA           00001ab2         00000004
+                _BSS                  BSS            00001ab6         00000008
 /home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/main.c
-                _TEXT                 CODE           00000054         00000045
-                CONST                 DATA           000005c8         00000071
-                CONST2                DATA           0000063a         00000000
-                _DATA                 DATA           0000064c         00000000
+                _TEXT                 CODE           00000f21         000000ee
+                CONST                 DATA           000019e8         00000098
+                CONST2                DATA           00001aa0         00000000
+                _DATA                 DATA           00001ab6         00000000
+/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/memory.c
+                _TEXT                 CODE           0000100f         00000154
+                CONST                 DATA           00001a80         00000000
+                CONST2                DATA           00001aa0         00000000
+                _DATA                 DATA           00001ab6         00000000
 /home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/stdio.c
-                _TEXT                 CODE           00000099         0000052e
-                CONST                 DATA           0000063a         00000000
-                CONST2                DATA           0000063a         00000011
-                _DATA                 DATA           0000064c         00000000
+                _TEXT                 CODE           00001163         000005b2
+                CONST                 DATA           00001a80         00000020
+                CONST2                DATA           00001aa0         00000011
+                _DATA                 DATA           00001ab6         00000000
+/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/string.c
+                _TEXT                 CODE           00001715         0000010a
+                CONST                 DATA           00001aa0         00000000
+                CONST2                DATA           00001ab2         00000000
+                _DATA                 DATA           00001ab6         00000000
+/home/ethan/Documents/Personal/Programming/OS/src/bootloader/full/utility.c
+                _TEXT                 CODE           0000181f         00000099
+                CONST                 DATA           00001aa0         00000000
+                CONST2                DATA           00001ab2         00000000
+                _DATA                 DATA           00001ab6         00000000
 Warning! W1014: stack segment not found
 
 
@@ -86,6 +154,6 @@ Warning! W1014: stack segment not found
                         +-----------------------+
 
 Stack size:  0200 (512.)
-Memory size:  064c (1612.)
+Memory size:  1abe (6846.)
 Entry point address: 00000000
 Link time: 00:00.00

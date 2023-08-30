@@ -15,6 +15,37 @@ void puts(const char* str)
 }
 
 
+
+
+const char* formatIdentifier(LogInterest identifier)
+{
+    switch (identifier)
+    {
+        case IO:
+            return "[IO]   ";
+
+        case INFO:
+            return "[INFO] ";
+
+        default:
+            return "[DEBUG]";
+    }
+}
+
+void log(LogInterest interest, const char* msg)
+{
+    const char* identifierStr = formatIdentifier(interest);
+
+    puts(identifierStr);
+    puts(" -> ");
+    puts(msg);
+
+    puts("\r\n");
+}
+
+
+
+
 #define PRINTF_STATE_NORMAL 0
 #define PRINTF_STATE_LENGTH 1
 #define PRINTF_STATE_LENGTH_SHORT 2

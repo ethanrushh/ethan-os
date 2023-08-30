@@ -6,15 +6,17 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "_cdecl="
+                "_cdecl=",
+                "far=",
+                "near="
             ],
-            "compilerPath": "/usr/bin/watcom/binl/wcc",
             "cStandard": "c99",
             "cppStandard": "gnu++17",
             "intelliSenseMode": "clang-x64",
             "compilerArgs": [
                 "-4 -d3 -s -wx -ms -zl -zq"
-            ]
+            ],
+            "compilerPath": "/usr/bin/watcom/binl/wcc"
         }
     ],
     "version": 4
