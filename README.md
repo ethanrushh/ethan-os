@@ -21,4 +21,5 @@ masm
 make
 qemu
 watcom C (16 bit realmode compiler)
+gcc
 ~~bochs~~
