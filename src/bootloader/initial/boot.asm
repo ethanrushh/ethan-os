@@ -1,3 +1,5 @@
+; src for documentation - https://en.wikipedia.org/wiki/Design_of_the_FAT_file_system#Boot_Sector
+
 org 0x7c00 ; The offset required for a legacy boot
 bits 16 ; Boot in 16-bit. CPU needs to be started in Intel 8086 style instructions first (assembler will assemble 16 bit codes)
 
