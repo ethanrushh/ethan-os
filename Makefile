@@ -23,7 +23,7 @@ $(BUILD_DIR)/main_floppy.img: bootloader kernel
 	mcopy -i $(BUILD_DIR)/main_floppy.img $(BUILD_DIR)/kernel.bin "::kernel.bin"
 	mcopy -i $(BUILD_DIR)/main_floppy.img testfile.txt "::test.txt"
 	mmd -i $(BUILD_DIR)/main_floppy.img "::testdir"
-	mcopy -i $(BUILD_DIR)/main_floppy.img testfile.txt "::testdir/test.txt"
+	mcopy -i $(BUILD_DIR)/main_floppy.img testfile.txt "::testdir/test2.txt"
 
 
 # Boot loader
