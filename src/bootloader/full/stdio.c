@@ -41,22 +41,22 @@ void log(LogInterest identifier, const char* msg)
     switch (identifier)
     {
         case IO:
-            puts_color("[IO] -> ", TTY_COLOR_LIGHT_BLUE);
+            puts_color("IO >> ", TTY_COLOR_LIGHT_BLUE);
             printf(msg);
             break;
 
         case INFO:
-            puts_color("[INFO] -> ", TTY_COLOR_WHITE);
+            puts_color("INFO >> ", TTY_COLOR_WHITE);
             printf(msg);
             break;
 
         case VIDEO:
-            puts_color("[VIDEO] -> ", TTY_COLOR_YELLOW);
+            puts_color("VIDEO >> ", TTY_COLOR_YELLOW);
             printf(msg);
             break;
 
         default:
-            puts_color("[DEBUG] -> ", TTY_COLOR_LIGHT_GRAY);
+            puts_color("DEBUG >> ", TTY_COLOR_LIGHT_GRAY);
             printf(msg);
             break;
     }
