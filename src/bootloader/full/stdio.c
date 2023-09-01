@@ -46,7 +46,7 @@ void log(LogInterest identifier, const char* msg)
             break;
 
         case INFO:
-            puts_color("INFO >> ", TTY_COLOR_WHITE);
+            puts_color("INFO >> ", TTY_COLOR_LIGHT_GRAY);
             printf(msg);
             break;
 
@@ -56,7 +56,7 @@ void log(LogInterest identifier, const char* msg)
             break;
 
         default:
-            puts_color("DEBUG >> ", TTY_COLOR_LIGHT_GRAY);
+            puts_color("DEBUG >> ", TTY_COLOR_RED);
             printf(msg);
             break;
     }
