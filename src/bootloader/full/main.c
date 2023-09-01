@@ -17,6 +17,8 @@ void _cdecl cstart_(uint16_t bootDrive)
 
     log(INFO, "Printing root DIR");
 
+    printf("\r\n");
+
     
     DISK disk;
     if (!DISK_Initialize(&disk, bootDrive))
@@ -45,6 +47,8 @@ void _cdecl cstart_(uint16_t bootDrive)
         printf("\r\n");
     }
     FAT_Close(fd);
+
+    printf("\r\nDone.\r\n");
 
 
 
