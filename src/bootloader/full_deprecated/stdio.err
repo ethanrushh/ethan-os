@@ -1,0 +1,2 @@
+color.h(16): Warning! W138: No newline at end of file
+stdio.c(19): Warning! W303: Parameter 'color' has been defined, but not referenced

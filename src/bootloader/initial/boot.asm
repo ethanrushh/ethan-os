@@ -380,8 +380,8 @@ file_kernel_bin:		db 'FULL    BIN' ; Fat file names are 11 bytes, padded with sp
 kernel_not_found_msg:	db 'Bad floppy', ENDL, 0
 kernel_cluster: 		dw 0
 
-KERNEL_LOAD_SEGMENT		equ 0x2000
-KERNEL_LOAD_OFFSET		equ 0
+KERNEL_LOAD_SEGMENT		equ 0x0
+KERNEL_LOAD_OFFSET		equ 0x500
 
 times 510-($-$$) db 0 ; Fills the rest of the bytes we need with 0s
 dw 0AA55h ; The required signature for the BIOS to detect that we are a boot loader not the start of random data

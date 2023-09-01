@@ -1,3 +1,3 @@
-make clean
+make clean-build
 make
 qemu-system-i386 -enable-kvm -fda build/main_floppy.img

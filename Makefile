@@ -1,15 +1,16 @@
-ASSEMBLER=nasm
-CC=gcc
-CC16=/usr/bin/watcom/binl/wcc
-LD16=/usr/bin/watcom/binl/wlink
-
 SRC_DIR=src
 UTILS_DIR=utils
-BUILD_DIR=build
 
-.PHONY: all floppy_image kernel bootloader clean always utils_fat
+include build_scripts/config.mk
+
+.PHONY: all floppy_image kernel bootloader clean-all clean-build always utils_fat
 
 all: floppy_image utils_fat
+clean-all: clean-toolchain clean-build
+
+include build_scripts/toolchain.mk
+
+
 
 # Floppy
 # Contains both the boot loader and the kernel
@@ -58,5 +59,5 @@ $(SRC_DIR)/$(BUILD_DIR)/utils/fat: always $(SRC_DIR)/$(UTILS_DIR)/fat/fat.c
 always:
 	mkdir -p $(BUILD_DIR)
 
-clean:
+clean-build:
 	rm -rf $(BUILD_DIR)/*
