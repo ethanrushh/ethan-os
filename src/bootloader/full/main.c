@@ -3,10 +3,21 @@
 #include "disk.h"
 #include "fat.h"
 
+#define EVER ;;
+
 void far* g_data = (void far*)0x00500200;
 
 void _cdecl cstart_(uint16_t bootDrive)
 {
+    SetVideoMode();
+    log(VIDEO, "BIOS VESA mode to Graphics");
+
+    log(IO, "OK"); // idk, if we've gotten this far then IO must be fine
+
+
+    log(INFO, "Printing root DIR");
+
+    
     DISK disk;
     if (!DISK_Initialize(&disk, bootDrive))
     {
@@ -35,9 +46,15 @@ void _cdecl cstart_(uint16_t bootDrive)
     }
     FAT_Close(fd);
 
-    catFile("test.txt", disk);
-    catFile("testdir/test.txt", disk);
 
+
+
+    //catFile("test.txt", disk);
+
+    goto end;
+
+
+// Hang
 end:
     for (;;);
 }

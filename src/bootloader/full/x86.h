@@ -3,7 +3,8 @@
 
 void _cdecl x86_div64_32(uint64_t dividend, uint32_t divisor, uint64_t* quotientOut, uint32_t* remainderOut);
 
-void _cdecl x86_Video_WriteCharTTY(char c, uint8_t page);
+// TODO color should be typedef and defines
+void _cdecl x86_Video_WriteCharTTY(char c, uint8_t page, char color);
 
 bool _cdecl x86_Disk_Reset(uint8_t drive);
 
@@ -19,3 +20,5 @@ bool _cdecl x86_Disk_GetDriveParams(uint8_t drive,
                                     uint16_t* cylindersOut,
                                     uint16_t* sectorsOut,
                                     uint16_t* headsOut);
+
+void _cdecl x86_TTY_Set_Video_Mode();

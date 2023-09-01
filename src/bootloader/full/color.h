@@ -1,0 +1,16 @@
+#define TTY_COLOR_BLACK         0
+#define TTY_COLOR_BLUE          1
+#define TTY_COLOR_GREEN         2
+#define TTY_COLOR_CYAN          3
+#define TTY_COLOR_RED           4
+#define TTY_COLOR_MAGENTA       5
+#define TTY_COLOR_BROWN         6
+#define TTY_COLOR_LIGHT_GRAY    7
+#define TTY_COLOR_DARK_GRAY     8
+#define TTY_COLOR_LIGHT_BLUE    9
+#define TTY_COLOR_LIGHT_GREEN   10
+#define TTY_COLOR_LIGHT_CYAN    11
+#define TTY_COLOR_LIGHT_RED     12
+#define TTY_COLOR_LIGHT_MAGENTA 13
+#define TTY_COLOR_YELLOW        14
+#define TTY_COLOR_WHITE         15

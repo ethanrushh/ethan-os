@@ -115,16 +115,34 @@ _x86_Video_WriteCharTTY:
     ; [bp + 4] - first argument (character)
     ; [bp + 6] - second argument (page)
     ; note: bytes are converted to words (you can't push a single byte on the stack)
+
+
+    mov bl, [bp + 12]
+
     mov ah, 0Eh
     mov al, [bp + 4]
     mov bh, [bp + 6]
 
     int 10h
 
+    mov bl, 0
+
     ; restore bx
     pop bx
 
     ; restore old call frame
+    mov sp, bp
+    pop bp
+    ret
+
+
+; TODO finish
+global _x86_Video_WriteString
+_x86_Video_WriteString:
+    push bp,
+    mov bp, sp
+
+    pop bx
     mov sp, bp
     pop bp
     ret
@@ -271,4 +289,11 @@ _x86_Disk_GetDriveParams:
     ; restore old call frame
     mov sp, bp
     pop bp
+    ret
+
+global _x86_TTY_Set_Video_Mode
+_x86_TTY_Set_Video_Mode:
+	mov ax, 19
+	int 16
+
     ret

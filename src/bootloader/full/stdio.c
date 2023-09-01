@@ -1,9 +1,10 @@
 #include "stdio.h"
 #include "x86.h"
+#include "color.h"
 
-void putc(char c) 
+void putc(char c)
 {
-    x86_Video_WriteCharTTY(c, 0);
+    putc_color(c, TTY_COLOR_WHITE);
 }
 
 void puts(const char* str)
@@ -15,35 +16,53 @@ void puts(const char* str)
 }
 
 
+void putc_color(char c, unsigned char color)
+{
+    x86_Video_WriteCharTTY(c, 0, (char)5);
+}
+void puts_color(const char* str, unsigned char color)
+{
+    while (*str) {
+        putc_color(*str, color);
+        str++;   
+    }
+}
 
 
-const char* formatIdentifier(LogInterest identifier)
+
+void SetVideoMode()
+{
+    x86_TTY_Set_Video_Mode();
+}
+
+
+void log(LogInterest identifier, const char* msg)
 {
     switch (identifier)
     {
         case IO:
-            return "[IO]   ";
+            puts_color("[IO] -> ", TTY_COLOR_LIGHT_BLUE);
+            printf(msg);
+            break;
 
         case INFO:
-            return "[INFO] ";
+            puts_color("[INFO] -> ", TTY_COLOR_WHITE);
+            printf(msg);
+            break;
+
+        case VIDEO:
+            puts_color("[VIDEO] -> ", TTY_COLOR_YELLOW);
+            printf(msg);
+            break;
 
         default:
-            return "[DEBUG]";
+            puts_color("[DEBUG] -> ", TTY_COLOR_LIGHT_GRAY);
+            printf(msg);
+            break;
     }
-}
-
-void log(LogInterest interest, const char* msg)
-{
-    const char* identifierStr = formatIdentifier(interest);
-
-    puts(identifierStr);
-    puts(" -> ");
-    puts(msg);
 
     puts("\r\n");
 }
-
-
 
 
 #define PRINTF_STATE_NORMAL 0
